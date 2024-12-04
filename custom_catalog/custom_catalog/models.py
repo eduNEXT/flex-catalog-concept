@@ -1,20 +1,32 @@
 """
 Database models for custom_catalog.
 """
-# from django.db import models
+
+from django.db import models
 from model_utils.models import TimeStampedModel
+from flex_catalog.models import FlexibleCatalogModel, FixedCatalog
+
+from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+
+from django.conf import settings
 
 
-class OdysseyCustomCatalog(TimeStampedModel):
+class OdysseyCustomCatalog(FlexibleCatalogModel):
     """
-    TODO: replace with a brief description of the model.
-
-    TODO: Add either a negative or a positive PII annotation to the end of this docstring.  For more
-    information, see OEP-30:
-    https://open-edx-proposals.readthedocs.io/en/latest/oep-0030-arch-pii-markup-and-auditing.html
+    A catalog that does 1:1 matching (as the fixedcatalog does) but filters the available input courses
     """
+    filtered_course_runs = models.ManyToManyField(
+        CourseOverview,
+        blank=True,
+        related_name='filtered_catalogs',
+        limit_choices_to=settings.AVAILABLE_COURSES_FILTER
+    )
 
-    # TODO: add field definitions
+    def get_course_runs(self):
+        """
+        Returns the associated course_runs.
+        """
+        return self.filtered_course_runs.all()
 
     def __str__(self):
         """
