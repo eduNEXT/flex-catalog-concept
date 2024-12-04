@@ -6,8 +6,6 @@ from django.db import models
 from model_utils.models import TimeStampedModel
 from flex_catalog.models import FlexibleCatalogModel, FixedCatalog
 
-from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
-
 from django.conf import settings
 
 
@@ -16,7 +14,7 @@ class OdysseyCustomCatalog(FlexibleCatalogModel):
     A catalog that does 1:1 matching (as the fixedcatalog does) but filters the available input courses
     """
     filtered_course_runs = models.ManyToManyField(
-        CourseOverview,
+        'course_overviews.CourseOverview',
         blank=True,
         related_name='filtered_catalogs',
         limit_choices_to=settings.AVAILABLE_COURSES_FILTER
@@ -32,5 +30,4 @@ class OdysseyCustomCatalog(FlexibleCatalogModel):
         """
         Get a string representation of this model instance.
         """
-        # TODO: return a string appropriate for the data fields
         return '<OdysseyCustomCatalog, ID: {}>'.format(self.id)

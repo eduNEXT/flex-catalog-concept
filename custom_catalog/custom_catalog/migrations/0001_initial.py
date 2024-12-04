@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('flex_catalog', '0003_alter_flexiblecatalogmodel_name'),
+        ('flex_catalog', '0002_dynamiccatalog'),
         ('course_overviews', '0029_alter_historicalcourseoverview_options'),
     ]
 

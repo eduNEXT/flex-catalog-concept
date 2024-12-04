@@ -10,7 +10,6 @@ from django.utils.text import slugify
 from model_utils.models import TimeStampedModel
 from model_utils.managers import InheritanceManager
 
-# TODO: make this lazy load
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
 
 
@@ -25,19 +24,24 @@ class FlexibleCatalogModel(TimeStampedModel):
     objects = InheritanceManager()
 
     def save(self, *args, **kwargs):
+        """
+        Make the slugs easily
+        """
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
     def get_course_runs(self):
         """
+        The base catalog class returns every CourseOverview
         """
         return CourseOverview.objects.all()
 
     def search(self, search_term):
         """
+        Basic implementation of keyword search
         """
-        return CourseOverview.objects.filter(
+        return self.get_course_runs.objects.filter(
             models.Q(display_name__icontains=search_term)
         )
 
@@ -45,12 +49,11 @@ class FlexibleCatalogModel(TimeStampedModel):
         """
         Get a string representation of this model instance.
         """
-        # TODO: return a string appropriate for the data fields
         return '<FlexibleCatalogModel, ID: {}>'.format(self.id)
 
 
 class FixedCatalog(FlexibleCatalogModel):
-    course_runs = models.ManyToManyField(CourseOverview, blank=True)
+    course_runs = models.ManyToManyField('course_overviews.CourseOverview', blank=True)
 
     def get_course_runs(self):
         """

@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.urls import reverse
 from django.utils.html import format_html
 
 from .models import FlexibleCatalogModel, FixedCatalog, DynamicCatalog
@@ -23,7 +24,16 @@ class FlexibleCatalogModelAdmin(admin.ModelAdmin, CourseKeysMixin):
     prepopulated_fields = {'slug': ('name',)}
 
     def model_class_name(self, obj):
-        return obj.__class__.__name__
+        """
+        Provide a link to the admin edit page for the specific subclass instance.
+        """
+        subclass_admin_url = reverse(
+            f'admin:{obj._meta.app_label}_{obj.__class__.__name__.lower()}_change',
+            args=[obj.id]
+        )
+        return format_html('<a href="{}">{}</a>', subclass_admin_url, obj.__class__.__name__)
+
+    model_class_name.short_description = "Update Link"
 
     def get_queryset(self, request):
         """
@@ -45,6 +55,9 @@ class DynamicCatalogAdmin(admin.ModelAdmin, CourseKeysMixin):
     search_fields = ('flexible_catalog__name', 'flexible_catalog__slug', 'flexible_catalog__id', 'query_string')
 
     def course_keys(self, obj):
+        """
+        Return the ids for easy debug in the admin views
+        """
         course_runs = obj.get_course_runs()
         if course_runs.exists():
             course_ids = [str(course.id) for course in course_runs]  # Collect IDs of each course
