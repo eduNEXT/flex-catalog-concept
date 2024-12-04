@@ -55,6 +55,9 @@ class FixedCatalog(FlexibleCatalogModel):
         """
         return self.course_runs.all()
 
+    def __str__(self):
+        return f"FixedCatalog: {self.id}"
+
 
 class DynamicCatalog(FlexibleCatalogModel):
     query_string = models.TextField(
@@ -77,4 +80,4 @@ class DynamicCatalog(FlexibleCatalogModel):
         return CourseOverview.objects.none()
 
     def __str__(self):
-        return f"DynamicCatalog: {self.name}"
+        return f"DynamicCatalog: {self.id}"
