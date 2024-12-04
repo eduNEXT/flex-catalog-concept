@@ -41,7 +41,7 @@ class FlexibleCatalogModel(TimeStampedModel):
         """
         Basic implementation of keyword search
         """
-        return self.get_course_runs.objects.filter(
+        return self.get_course_runs().filter(
             models.Q(display_name__icontains=search_term)
         )
 
