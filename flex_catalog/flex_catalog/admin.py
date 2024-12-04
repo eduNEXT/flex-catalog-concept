@@ -18,9 +18,18 @@ class CourseKeysMixin:
 
 @admin.register(FlexibleCatalogModel)
 class FlexibleCatalogModelAdmin(admin.ModelAdmin, CourseKeysMixin):
-    list_display = ('name', 'slug', 'id', 'course_keys')
+    list_display = ('name', 'slug', 'id', 'model_class_name', 'course_keys')
     search_fields = ('name', 'slug', 'id')
     prepopulated_fields = {'slug': ('name',)}
+
+    def model_class_name(self, obj):
+        return obj.__class__.__name__
+
+    def get_queryset(self, request):
+        """
+        Override the queryset to use select_subclasses for subclass resolution.
+        """
+        return FlexibleCatalogModel.objects.select_subclasses()
 
 
 @admin.register(FixedCatalog)
@@ -36,9 +45,6 @@ class DynamicCatalogAdmin(admin.ModelAdmin, CourseKeysMixin):
     search_fields = ('flexible_catalog__name', 'flexible_catalog__slug', 'flexible_catalog__id', 'query_string')
 
     def course_keys(self, obj):
-        """
-        Renders the keys of the courses from get_course_runs.
-        """
         course_runs = obj.get_course_runs()
         if course_runs.exists():
             course_ids = [str(course.id) for course in course_runs]  # Collect IDs of each course

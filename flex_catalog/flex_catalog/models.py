@@ -8,6 +8,7 @@ from django.db import models
 from django.utils.text import slugify
 
 from model_utils.models import TimeStampedModel
+from model_utils.managers import InheritanceManager
 
 # TODO: make this lazy load
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
@@ -20,6 +21,8 @@ class FlexibleCatalogModel(TimeStampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     slug = models.SlugField(unique=True, blank=True, max_length=255)
     name = models.CharField(max_length=255, help_text="Human friendly")
+
+    objects = InheritanceManager()
 
     def save(self, *args, **kwargs):
         if not self.slug:
