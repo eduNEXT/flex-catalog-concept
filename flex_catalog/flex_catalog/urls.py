@@ -1,10 +1,9 @@
 """
 URLs for flex_catalog.
 """
-from django.urls import re_path  # pylint: disable=unused-import
-from django.views.generic import TemplateView  # pylint: disable=unused-import
+from django.urls import path
+from .views import FlexibleCatalogModelViewSet
 
 urlpatterns = [
-    # TODO: Fill in URL patterns and views here.
-    # re_path(r'', TemplateView.as_view(template_name="flex_catalog/base.html")),
+    path('catalogs/', FlexibleCatalogModelViewSet.as_view({'get': 'list', 'post': 'create'}), name='catalog-list'),
 ]
